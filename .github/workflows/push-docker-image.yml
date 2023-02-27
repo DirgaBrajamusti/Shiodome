@@ -3,7 +3,7 @@ on: [push] # When pushing to any branch then run this action
 # Env variable
 env:
   DOCKER_USER: ${{ secrets.DOCKER_USER }}
-  DOCKER_TOKEN: ${{ secrets.DOCKERHUB_USERNAME }}
+  DOCKER_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
   REPO_NAME: ${{ github.repository }}
 jobs:
   push-image-to-docker-hub:  # job name

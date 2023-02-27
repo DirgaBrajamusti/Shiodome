@@ -4,7 +4,7 @@ on: [push] # When pushing to any branch then run this action
 env:
   DOCKER_USER: ${{ secrets.DOCKER_USER }}
   DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
-  REPO_NAME: ${{ github.repository }}
+  REPO_NAME: ${{ secrets.DOCKER_USER }}/shiodome
 jobs:
   push-image-to-docker-hub:  # job name
     runs-on: ubuntu-latest  # runner name : (ubuntu latest version) 

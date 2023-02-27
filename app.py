@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, url_for, redirect, flash, session
-import time, threading, logging, requests
+import time, threading, logging, requests, os
+from dotenv import load_dotenv
 from apscheduler.schedulers.background import BackgroundScheduler
 
 
@@ -15,8 +16,9 @@ app.config['DEBUG'] = True
 app.config['secret'] = 'rahasiawoi'
 app.secret_key = 'rahasia banget woi'
 app.config['SESSION_TYPE'] = 'filesystem'
+load_dotenv()
 CLIENT_ID = "1079833951796994058"
-REDIRECT_URI = "http://localhost:5000/" + "login/discord/callback"
+REDIRECT_URI = os.getenv("URL") + "/login/discord/callback"
 CLIENT_SECRET = "Y_hDpNwVMhxYBdM7_bldlXdX91ykjizh"
 
 

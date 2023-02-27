@@ -1,7 +1,6 @@
 from helpers.database.database import database
 import logging
 
-logger = logging.getLogger('app')
 
 def add_watchlist(user_id, provider, anime_name):
     db = database()
@@ -11,7 +10,6 @@ def add_watchlist(user_id, provider, anime_name):
 
 def get_watchlist(user_id):
     db = database()
-    logger.info('Utility function called')
     query = db['watchlist'].find({"id": user_id}, {"_id": 1, "id": 1, "provider": 1, "anime_name": 1})
     results = list(query)
     if len(results) != 0:

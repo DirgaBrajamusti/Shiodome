@@ -10,7 +10,6 @@ def check_user(user_id):
     db = database()
     users = db['users']
     results = users.find_one({'id': user_id}, {"provider"})
-    print(type(results))
     if results != None:
         return {"status": True, "data":results}
     return {"status": False, "data" : {}}

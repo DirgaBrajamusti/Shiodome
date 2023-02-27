@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, url_for, redirect, flash, session
-import time, threading, logging
+import time, threading, logging, requests
 from apscheduler.schedulers.background import BackgroundScheduler
 
 
@@ -15,6 +15,10 @@ app.config['DEBUG'] = True
 app.config['secret'] = 'rahasiawoi'
 app.secret_key = 'rahasia banget woi'
 app.config['SESSION_TYPE'] = 'filesystem'
+CLIENT_ID = "1079833951796994058"
+REDIRECT_URI = "http://localhost:5000/" + "login/discord/callback"
+CLIENT_SECRET = "Y_hDpNwVMhxYBdM7_bldlXdX91ykjizh"
+
 
 @app.route('/')
 def web_home():
@@ -31,20 +35,48 @@ def web_login():
     if "user" in session:
         flash("You already log in")
         return redirect("/")
-    if request.method == "POST":
-        if helpers.database.users.check_user(request.form['user']):
-            session["user"] = request.form["user"]
-            flash("Login successful")
-        else:
-            helpers.database.users.create_user(request.form['user'])
-            flash(f"Login created: {request.form['user']}")
-        return redirect('/')
-    return render_template("login.html")
+    discord_login_url = f"https://discord.com/api/oauth2/authorize?client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&response_type=code&scope=identify"
+    return redirect(discord_login_url)
+
+@app.route("/login/discord/callback")
+def login_discord_callback():
+    code = request.args.get("code")
+    payload = {
+        "client_id": CLIENT_ID,
+        "client_secret": CLIENT_SECRET,
+        "grant_type": "authorization_code",
+        "code": code,
+        "redirect_uri": REDIRECT_URI,
+        "scope": "identify"
+    }
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded"
+    }
+    token_response = requests.post("https://discord.com/api/oauth2/token", data=payload, headers=headers)
+    access_token = token_response.json()["access_token"]
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+    user_response = requests.get("https://discord.com/api/users/@me", headers=headers)
+    user_data = user_response.json()
+
+    session["user"] = user_data["id"]
+    session["discord_username"] = user_data['username']
+    session["discord_avatar_url"] = f"https://cdn.discordapp.com/avatars/{user_data['id']}/{user_data['avatar']}.png"
+    if helpers.database.users.check_user(user_data["id"])["status"]:
+        flash("Login successful")
+    else:
+        helpers.database.users.create_user(user_data["id"])
+        flash(f"Login created: {user_data['username']}")
+    return redirect('/')
+
 
 @app.route('/logout')
 def web_logout():
     if "user" in session:
-        session.pop("user")
+        session.pop("user", None)
+        session.pop("discord_avatar_url", None)
+        session.pop("discord_username", None)
         flash("Logout successful")
         return redirect("/")
     flash("You not log in")
@@ -95,8 +127,14 @@ def web_webhook():
 
     webhook_data = helpers.database.webhook.get_url(user)
     return render_template('webhook/add.html', webhook_data=webhook_data)
-    
+
+@app.route('/test')
+def web_test():
+    print(session['user'])
+    return "OK"
+
 def run_the_task():
+    print("[Scheduler] Running task")
     helpers.tasks.anime_task()
 
 scheduler = BackgroundScheduler()

@@ -4,7 +4,6 @@ import logging
 
 from helpers.scrapers import subsplease
 from helpers.database import webhook, anime
-logger = logging.getLogger('app.task')
 
 def send_discord_webhook(url, title, field, value):
     url = url
@@ -35,16 +34,14 @@ def send_discord_webhook(url, title, field, value):
     try:
         result.raise_for_status()
     except requests.exceptions.HTTPError as err:
-        logger.critical(err)
+        print(err)
     else:
-        logger.info('[Discord] Webhook sended')
+        print('[Discord] Webhook sended')
 
 def anime_task():
-    print("[RSS] Check")
-    logger.info("[Anime RSS] Check")
+    print("[Anime RSS] Check")
     for releases in [subsplease.getLatestRelease()]:
         if releases['latest'] == True:
-            logger.info('[Anime RSS] New Release')
             print('[Anime RSS] New Release')
             title = releases['data']['title']
             provider = releases['provider']

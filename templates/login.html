@@ -1,0 +1,13 @@
+{%extends "base.html"%}
+{%block content %}
+
+<article>
+    <form action="/login" method="post">
+        <label>User ID
+            <input type="text" name="user">
+        </label>
+        <button type="submit">Login</button>
+    </form>
+</article>
+
+{%endblock%}

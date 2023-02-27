@@ -1,0 +1,36 @@
+{%extends "base.html"%}
+{%block content %}
+
+{% for message in get_flashed_messages() %}
+<blockquote>
+    {{message}}
+</blockquote>
+{%endfor%}
+
+{%if user == None %}
+<a href="/login"><button>Login Here</button></a>
+{%else%}
+<article>
+    <div class="grid">
+        <div><a href="/add"><button class="outline">RSS Anime</button></a></div>
+        <div><a href="/webhook"><button class="secondary outline">Webhook</button></a></div>
+    </div>
+    <footer>
+        {%if watchlist['status']%}
+        <details open>
+            <summary>Your RSS Watchlist</summary>
+            <ul>
+                {%for anime in watchlist['data'] %}
+                <li>{{anime["anime_name"]}}</li>
+                {%endfor%}
+            </ul>
+        </details>
+        {%endif%}
+    </footer>
+</article>
+{%endif%}
+
+
+
+
+{%endblock%}

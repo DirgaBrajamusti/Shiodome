@@ -1,0 +1,44 @@
+{%extends "base.html"%}
+{%block content %}
+<article>
+    {%for scraper in anime_data %}
+    <details>
+        <summary>{{scraper}}</summary>
+        <label for="">Choose your anime:</label>
+        <form action="/add", method="POST">
+            <input type="text" name="provider" value="{{scraper}}" hidden>
+            {% for anime_name in anime_data[scraper] %}
+            <fieldset>
+                <label for="terms">
+                <input type="checkbox" id="anime_name" name="anime_name" value="{{anime_name}}">
+                    {{anime_name}}
+                </label>
+            </fieldset>
+            {% endfor %}
+            <button type="submit">Add anime to watchlist</button>
+        </form>
+    </details>
+    {%endfor%}
+</article>
+
+<article>
+    <p>Your Watchlist</p>
+    <table>
+        <thead>
+            <tr>
+                <td>Anime Name</td>
+                <td>Delete</td>
+            </tr>
+        </thead>
+        <tbody>
+            {%for anime in watchlist['data'] %}
+            <tr>
+                <td>{{anime["anime_name"]}}</td>
+                <td><a href="/delete?anime_name={{anime['anime_name']}}&id={{session['user']}}&provider={{anime['provider']}}">Delete</a></td>
+            </tr>
+            {%endfor%}
+        </tbody>
+    </table>
+</article>
+
+{%endblock%}

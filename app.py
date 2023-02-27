@@ -103,3 +103,5 @@ scheduler = BackgroundScheduler()
 scheduler.add_job(func=run_the_task, trigger="interval", minutes=10)
 scheduler.start()
 
+if __name__ == "__main__":
+    app.run(host='0.0.0.0')
